@@ -52,6 +52,8 @@ def log_standardisation(df):
     df['duration_y_log'] = df_num['duration_y_log']
     df['budget_y_log'] = df_num['budget_y_log']
 
+    df.drop(["budget_x", "budget_y", "duration_x", "duration_y"], axis=1)
+    
     return df
 
 # Code adapted from: https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
