@@ -35,6 +35,24 @@ def get_train_test_split(df, train_size = 0.7):
     
     return train, test
 
+def log_standardisation(df):
+    # logs of budget and duration columns to help reduce skew, particularly relevant for duration. budget is highly non-normal so not a huge effect
+    df['budget_x_log'] = np.log(df['budget_x'])
+    df['budget_y_log'] = np.log(df['budget_y'])
+    df['duration_x_log'] = np.log(df['duration_x'])
+    df['duration_y_log'] = np.log(df['duration_y'])
+
+    # standardisation of budget and duration log data
+    df_num = df[["duration_x_log", "budget_x_log", "duration_y_log", "budget_y_log"]]
+    df_num = (genres_films_num - genres_films_num.mean())/(genres_films_num.std())
+
+    #replace columns in original dataset with standardised data
+    df['duration_x_log'] = df_num['duration_x_log']
+    df['budget_x_log'] = df_num['budget_x_log']
+    df['duration_y_log'] = df_num['duration_y_log']
+    df['budget_y_log'] = df_num['budget_y_log']
+
+    return df
 
 # Code adapted from: https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
 def split(a, n):
