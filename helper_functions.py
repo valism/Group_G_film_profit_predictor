@@ -43,7 +43,7 @@ def log_standardisation(df):
     df['duration_y_log'] = np.log(df['duration_y'])
 
     # standardisation of budget and duration log data
-    df_num = df[["duration_x_log", "budget_x_log", "duration_y_log", "budget_y_log"]]
+    df_num = df[["duration_x_log", "budget_x_log", "duration_y_log", "budget_y_log","year_x","year_y"]]
     df_num = (df_num - df_num.mean())/(df_num.std())
 
     #replace columns in original dataset with standardised data
@@ -51,6 +51,8 @@ def log_standardisation(df):
     df['budget_x_log'] = df_num['budget_x_log']
     df['duration_y_log'] = df_num['duration_y_log']
     df['budget_y_log'] = df_num['budget_y_log']
+    df['year_x'] = df_num['year_x']
+    df['year_y'] = df_num['year_y']
 
     df.drop(["budget_x", "budget_y", "duration_x", "duration_y"], axis=1)
     

@@ -98,11 +98,11 @@ def date_enc(imdb_df):
     imdb_df.drop(columns=['SEASON_RELEASED'], inplace=True)
 
     # year released one-hot encoding
-    year = imdb_df['year'].astype(str).replace(' ','')
-    year = year.str.get_dummies()
-    year = year.add_prefix('YEAR_')
-    imdb_df = imdb_df.merge(year, left_index=True, right_index=True)
-    imdb_df.drop(columns=['year'], inplace=True)
+    #year = imdb_df['year'].astype(str).replace(' ','')
+    #year = year.str.get_dummies()
+    #year = year.add_prefix('YEAR_')
+    #imdb_df = imdb_df.merge(year, left_index=True, right_index=True)
+    #imdb_df.drop(columns=['year'], inplace=True)
     
     return imdb_df
 
@@ -141,7 +141,7 @@ def genre_enc(imdb_df):
 # film_pair_selection selects as close to 10,000 pairs as possible that ensures equal number of films across each of the 15 genre categories are included in dataset, and that only films with at least one genre in common are compared
 def film_overlapping_genre_selection(imdb_df):
     # get a list of GENRE_ column names to be used to iterate through for selection process. Must remove first n=18 columns as not GENRE related
-    n = 22
+    n = 18
     cols = imdb_df.columns.tolist()
     del cols[:n]
 
@@ -209,6 +209,6 @@ plt.savefig("duration_x.jpg")
 plt.hist(genres_films['budget_x'], density=True)
 plt.savefig("budget_x.jpg")
 
-genres_films.to_csv('profit_x_y.csv')
+genres_films.to_csv('profit_x_y_pYTHON.csv')
 
 #print(imdb_df)
