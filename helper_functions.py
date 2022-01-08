@@ -44,7 +44,7 @@ def log_standardisation(df):
 
     # standardisation of budget and duration log data
     df_num = df[["duration_x_log", "budget_x_log", "duration_y_log", "budget_y_log"]]
-    df_num = (genres_films_num - genres_films_num.mean())/(genres_films_num.std())
+    df_num = (df_num - df_num.mean())/(df_num.std())
 
     #replace columns in original dataset with standardised data
     df['duration_x_log'] = df_num['duration_x_log']
