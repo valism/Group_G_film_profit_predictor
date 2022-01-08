@@ -209,6 +209,6 @@ plt.savefig("duration_x.jpg")
 plt.hist(genres_films['budget_x'], density=True)
 plt.savefig("budget_x.jpg")
 
-genres_films.to_csv('profit_x_y_pYTHON.csv')
+genres_films.to_csv('profit_x_y.csv')
 
 #print(imdb_df)
