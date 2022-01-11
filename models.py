@@ -10,6 +10,7 @@ class FisherLinearDiscriminant:
     """
     This class builds Fisher Linear Discriminant Model.
     """
+
     def __init__(self):
         self.weights = None
 
@@ -20,10 +21,41 @@ class FisherLinearDiscriminant:
         m = np.mean(x_test, axis=0)
         return np.dot(x_test - m, self.weights)
 
+    def predict(self, x_test, threshold=0):
+
+        m = np.mean(x_test, axis=0)
+        predictions = []
+
+        for x in x_test:
+            y = np.matmul(self.weights.T, x - m)  # y = w.T * (x - m)
+
+            if y > threshold:
+                predictions.append(1)
+            else:
+                predictions.append(0)
+
+        return predictions
+
+    def get_roc_curve(self, x_train, y_train, x_test, y_test):
+        self.fit(x_train, y_train)
+        thresholds = np.linspace(-5, 5, 100)
+        fpr = []
+        tpr = []
+        for threshold in thresholds:
+            y_pred = self.predict(x_test, threshold=threshold)
+            tp, fp, tn, fn = evaluate_predictions(y_pred, y_test)
+
+            tpr.append(tp / (tp + fn))
+            fpr.append(fp / (tn + fp))
+
+        return fpr, tpr
+
+
 class LogisticRegression:
     """
     This class builds Logistic Regression Model.
     """
+
     def __init__(self, lr=0.01, iter=10000):
         self.weights = None
         self.lr = lr
@@ -53,5 +85,19 @@ class LogisticRegression:
 
         return self.sigmoid(np.dot(X, self.weights))
 
-    def predict(self, X):
-        return (self.predict_prob(X) >= 0.5).astype(int)
+    def predict(self, X, threshold=0.5):
+        return (self.predict_proba(X) >= threshold).astype(int)
+
+    def get_roc_curve(self, x_train, y_train, x_test, y_test):
+        self.fit(x_train, y_train)
+        thresholds = np.linspace(0, 1, 100)
+        fpr = []
+        tpr = []
+        for threshold in thresholds:
+            y_pred = self.predict(x_test, threshold=threshold)
+            tp, fp, tn, fn = evaluate_predictions(y_pred, y_test)
+
+            tpr.append(tp / (tp + fn))
+            fpr.append(fp / (tn + fp))
+
+        return fpr, tpr

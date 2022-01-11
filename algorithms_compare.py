@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 
-import matplotlib.axes as ax
+import matplotlib.axes as axp
 from models import *
 from helper_functions import *
 
@@ -83,7 +83,7 @@ def experiment_on_model(model, x_train, y_train, x_test, y_test):
     """
     The inputs are the model, the x, y in train set and the x, y in test set.
     The function will fit the model in the model list on train set,
-    get the predicted probability, and return return the statistics of
+    get the predicted probability, and return the statistics of
     fpr, tpr, auc_value for the input model.
     """
     classifier = model
