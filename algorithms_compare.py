@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
-import matplotlib.pyplot as plt
+
 import matplotlib.axes as ax
 from models import *
 from helper_functions import *
@@ -34,8 +34,8 @@ def test_on_models(data=df, model_dict=models):
     df_train, df_test = get_train_test_split(data, train_size=0.8)
 
     # Logs of numerical variables to reduce skewness
-    for all in (df_train, df_test):
-        log_standardisation(all)
+    for item in (df_train, df_test):
+        log_standardisation(item)
 
     # fig, axs = plt.subplots(2)
     # plt.subplots_adjust(hspace=1)

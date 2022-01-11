@@ -18,6 +18,35 @@ def get_accuracy(predictions, targets):
     return accuracy
 
 
+def evaluate_predictions(y_pred, y_true):
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0           
+        
+    for j in range(len(y_true)):
+        p = y_pred[j]
+        t = y_true[j]
+        
+        if t == 1 and p == 1:
+            tp += 1
+        elif p == 1 and t == 0:
+            fp += 1
+        elif t == 0 and p == 0:
+            tn += 1
+        elif t == 1 and p == 0:
+            fn += 1
+    return tp, fp, tn, fn
+
+def get_f1_score(y_pred, y_true):
+    # Number of true positives (tp), false positives (fp), true negatives (tn) and false negatives (fn)
+   
+    tp, fp, tn, fn = evaluate_predictions(y_pred, y_true)
+    f1_score = tp/(tp + 0.5*(fp + fn))
+    
+    return f1_score
+
+
 def get_train_test_split(df, train_size = 0.7):
     """
     Splits the dataframe into a training set and a testing set.
