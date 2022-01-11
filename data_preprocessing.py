@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.axes as ax
 
 # import raw data
 imdb_df = pd.read_csv('IMDb movies.csv')
@@ -202,14 +201,13 @@ imdb_df = genre_enc(imdb_df)
 genres_films = film_overlapping_genre_selection(imdb_df)
 genres_films.drop(columns=['worlwide_gross_income_x','worlwide_gross_income_y','profit_x','profit_y'], inplace=True)
 
-fig, axs = plt.subplots(2)
-plt.subplots_adjust(hspace = 1)
-axs[0].hist(genres_films['duration_x'], density=True)
-axs[1].hist(genres_films['budget_x'], density=True)
-axs[0].set(xlabel="Film duration (mins)", ylabel="Density", title="Film duration")
-axs[1].set(xlabel="Budget ($USD)", ylabel="Density", title="Budget")
+# histogram plot of film_x duration
+plt.hist(genres_films['duration_x'], density=True)
+plt.savefig("duration_x.jpg")
 
-plt.savefig("initial_budget_duration_plots.jpg")
+# histogram plot of film_x budget
+plt.hist(genres_films['budget_x'], density=True)
+plt.savefig("budget_x.jpg")
 
 genres_films.to_csv('profit_x_y.csv')
 

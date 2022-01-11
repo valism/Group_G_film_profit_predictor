@@ -6,8 +6,7 @@ def get_accuracy(predictions, targets):
     Calculates what proportion of the guesses are correct.
     For example, if 80% of the values match, returns 0.8.
     """
-    
-    
+
     scores = []
     for i in range(len(targets)):
         if predictions[i] == targets[i]:
@@ -20,13 +19,12 @@ def get_accuracy(predictions, targets):
 
 
 def get_train_test_split(df, train_size = 0.7):
-    
     """
     Splits the dataframe into a training set and a testing set.
     train_size determiens how much of the data goes into the trainig set (0.7 means 70%).
     Returns the training set and testing set.
     """
-    
+
     # Code for sampling adapted from: https://stackoverflow.com/questions/24147278/how-do-i-create-test-and-train-samples-from-one-dataframe-with-pandas
     
     train = df.sample(frac = train_size) # Use random_state to fix a seed value
@@ -36,17 +34,18 @@ def get_train_test_split(df, train_size = 0.7):
     return train, test
 
 def log_standardisation(df):
-    # logs of budget and duration columns to help reduce skew, particularly relevant for duration. budget is highly non-normal so not a huge effect
+    # Logs of budget and duration columns to help reduce skew, particularly relevant for duration.
+    # Budget is highly non-normal so not a huge effect
     df['budget_x_log'] = np.log(df['budget_x'])
     df['budget_y_log'] = np.log(df['budget_y'])
     df['duration_x_log'] = np.log(df['duration_x'])
     df['duration_y_log'] = np.log(df['duration_y'])
 
-    # standardisation of budget and duration log data
+    # Standardisation of budget and duration log data
     df_num = df[["duration_x_log", "budget_x_log", "duration_y_log", "budget_y_log","year_x","year_y"]]
     df_num = (df_num - df_num.mean())/(df_num.std())
 
-    #replace columns in original dataset with standardised data
+    # Replace columns in original dataset with standardised data
     df['duration_x_log'] = df_num['duration_x_log']
     df['budget_x_log'] = df_num['budget_x_log']
     df['duration_y_log'] = df_num['duration_y_log']
@@ -82,8 +81,7 @@ def get_fold_indices(df, num_folds = 10):
     and so on.
     
     train_indices[0] will give you the row numbers of the training data for the first iteration  
-    val_indices[0] will give you the row numbers of the validation data for the first iteration  
-
+    val_indices[0] will give you the row numbers of the validation data for the first iteration
     """
     
     
@@ -110,4 +108,5 @@ def get_fold_indices(df, num_folds = 10):
 
 
         return train_indices, val_indices
+
         
