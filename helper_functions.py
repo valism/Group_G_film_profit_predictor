@@ -56,7 +56,7 @@ def get_train_test_split(df, train_size = 0.7):
 
     # Code for sampling adapted from: https://stackoverflow.com/questions/24147278/how-do-i-create-test-and-train-samples-from-one-dataframe-with-pandas
     
-    train = df.sample(frac = train_size) # Use random_state to fix a seed value
+    train = df.sample(frac = train_size, random_state=100) # Use random_state to fix a seed value
     test = df.drop(train.index)  
 
     
