@@ -1,5 +1,4 @@
 import pandas as pd
-import random
 from sklearn.metrics import roc_curve, auc
 import numpy as np
 import matplotlib.pyplot as plt
