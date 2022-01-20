@@ -11,7 +11,7 @@ from models import *
 from helper_functions import *
 
 # Initialize four models as a dictionary, will be input in the later function
-models = {'Fishers Linear Discriminant': FisherLinearDiscriminant(),
+models = {'Fishers Linear Discriminant': FishersLinearDiscriminant(),
           'Naive Bayes': GaussianNB(),
           'Random Forest': RandomForestClassifier(),
           'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)

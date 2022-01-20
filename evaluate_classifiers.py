@@ -14,13 +14,19 @@ import argparse
 
 def cross_validate_model(x_data, y_data, model, num_folds):
     """
-    The function will take x, y, model and the number of folds of cross-validation as input.
-    The function will reset the indices of train and validation set, fit the model in train set,
-    and get fold_f1_score for each fold by comparing the true y and predicted y.
-    The function will return the list 'scores' which record the fold_f1_score for folds.
-    """
+    Perform k-fold cross validation using the model and given data.
+    Return the F1 scores for each iteration in a list.
+    Args:
+        x_data (DataFrame): Inputs of the model.
+        y_data (DataFrame): Targets of the model.
+        model (Object): Class instance of the model.
+        num_folds (int): Number of folds used for cross validation
 
-    # Keeps track of the scores for each iteration of cross validation.
+    Returns:
+        scores (list): F1 scores for each iteration.
+
+    """
+    # Keeps track of cross validation scores for each iteration.
     scores = []
 
     tf_indices, vf_indices = get_fold_indices(x_data, num_folds)
@@ -46,11 +52,78 @@ def cross_validate_model(x_data, y_data, model, num_folds):
     return scores
 
 
+def get_roc_data(x_train, y_train, x_test, y_test, classifiers):
+    """
+    Gets the false positive rates (fpr), true positive rates (tpr) and area below ROC curve (auc)
+    for each model in classifiers.
+
+    Args:
+        x_train (DataFrame): Inputs for training.
+        y_train (DataFrame): Targets for training.
+        x_test (DataFrame): Inputs for testing.
+        y_test (DataFrame): Outputs for testing.
+        classifiers (Dictionary): The models to be used, keys of the dictionary are model names and
+                                  values are class instances.
+
+    Returns:
+        roc_dict (dictionary): Dictionary containing model names as keys and fpr list, tpr list and auc as values.
+
+    """
+
+    roc_dict = {}
+
+    for name, model in classifiers.items():
+        # Lab models
+        if name == "Fishers Linear Discriminant" or name == "Logistic Regression":
+            fpr, tpr = model.get_roc_curve(x_train.to_numpy(),
+                                           y_train.to_numpy(),
+                                           x_test.to_numpy(),
+                                           y_test.to_numpy())
+
+            auc = round(abs(np.trapz(tpr, fpr)), 4)
+            roc_dict[name] = {"fpr": fpr, "tpr": tpr, "auc": auc}
+        # External (sklearn) models.
+        else:
+            model.fit(x_train, y_train)
+            y_score = model.predict_proba(x_test)
+            try:
+                fpr, tpr, threshold = roc_curve(y_test, y_score[:, 1])
+            except:
+                fpr, tpr, threshold = roc_curve(y_test, y_score)
+
+            auc = round(abs(np.trapz(tpr, fpr)), 4)
+            roc_dict[name] = {"fpr": fpr, "tpr": tpr, "auc": auc}
+
+    return roc_dict
+
+
+def print_cross_validation_results(cross_validation_scores):
+    """
+    Neatly prints the results from cross validation of the models.
+
+    Args:
+        cross_validation_scores (Dictionary): Contains the name (as keys) and a list
+        of cross validation scores ( as values) for each model.
+
+    """
+
+    print("--------------- CROSS VALIDATION SCORES (F1 Scores): ---------------")
+    pprint(cross_validation_scores)
+
+    print("\n Mean cross validation scores:")
+    for classifier in cross_validation_scores.keys():
+        mean_score = sum(cross_validation_scores[classifier]) / len(cross_validation_scores[classifier])
+        print(f"\t {classifier} --> {round(mean_score, 4)}")
+    print("-" * 70)
+
+
 def test_models(data, classifiers):
     """
-    The function will dataframe and type of classifier as input.
-    The function will split train and validation set, use cross-validation to check if the model works well for different folds,
-    and then draw the ROC and get the AUC for each model on test set.
+    Performs cross validation on classifiers and plots their ROC curves.
+    Args:
+        data (dataframe): The pre-processed movie data (located in the csv file: "profit_x_y.csv")
+        classifiers (Dictionary): Contains the name (as key) and class instance (as value) of each classifier.
+
     """
 
     #  Split the data into train set and test set
@@ -76,63 +149,36 @@ def test_models(data, classifiers):
         model_scores = cross_validate_model(x_train, y_train, model, num_folds=5)
         cross_validation_scores[name] = model_scores
 
-    print("--------------- CROSS VALIDATION SCORES (F1 Scores): ---------------")
-    pprint(cross_validation_scores)
+    print_cross_validation_results(cross_validation_scores)
 
-    print("\n Mean cross validation scores:")
-    for classifier in cross_validation_scores.keys():
-        mean_score = sum(cross_validation_scores[classifier]) / len(cross_validation_scores[classifier])
-        print(f"\t {classifier} --> {round(mean_score, 4)}")
-    print("-" * 70)
     # Getting roc curves:
-    roc_dict = {}
-
-    for name, model in classifiers.items():
-        if name == "Fishers Linear Discriminant" or name == "Logistic Regression":
-            fpr, tpr = model.get_roc_curve(x_train.to_numpy(),
-                                           y_train.to_numpy(),
-                                           x_test.to_numpy(),
-                                           y_test.to_numpy())
-
-            auc = round(abs(np.trapz(tpr, fpr)), 4)
-            roc_dict[name] = {"fpr": fpr, "tpr": tpr, "auc": auc}
-        else:
-            model.fit(x_train, y_train)
-            y_score = model.predict_proba(x_test)
-            try:
-                fpr, tpr, threshold = roc_curve(y_test, y_score[:, 1])
-            except:
-                fpr, tpr, threshold = roc_curve(y_test, y_score)
-
-            auc = round(abs(np.trapz(tpr, fpr)), 4)
-            roc_dict[name] = {"fpr": fpr, "tpr": tpr, "auc": auc}
+    roc_dict = get_roc_data(x_train, y_train, x_test, y_test, classifiers)
 
     print("\n Area below ROC curve:")
+
     # Plot ROC curves for the model
     for model_name in roc_dict.keys():
-        plt.plot(roc_dict[model_name]['fpr'], roc_dict[model_name]['tpr'],
-                 label=f"{model_name} ( Area = {round(roc_dict[model_name]['auc'], 3)} )")
-
         print(f"\t {model_name} --> {round(roc_dict[model_name]['auc'], 3)}")
 
+        plt.plot(roc_dict[model_name]['fpr'],
+                 roc_dict[model_name]['tpr'],
+                 label=f"{model_name} ( Area = {round(roc_dict[model_name]['auc'], 3)} )")
+
     plt.title("ROC curve for classifiers")
+
     plt.xlabel("False positive rate")
     plt.ylabel("True positive rate")
 
-    # Uncomment the following section if you want to see the histogram plot for Fishers Linear Discriminant.
-    # The histogram was only generated for the report.
-    # ax = FisherLinearDiscriminant.plot_histogram(x_train.to_numpy(), y_train.to_numpy())
-    # ax.set_title(" Fishers Linear Discriminant Projected Data")
-    # ax.set_xlabel(r"$\mathbf{w}^T\mathbf{x}$")
-
     plt.legend()
+
     plt.savefig("ROC Curves for Classifiers.png")
+
     plt.show()
 
 
 if __name__ == "__main__":
     # Run file from the pycharm terminal using the command "python evaluate_classifiers.py profit_x_y.csv"
-    # If you want to use window's command prompt, you need to change the directory (using the "cd" command)
+    # If you want to use Windows' command prompt, you need to change the directory (using the "cd" command)
     # to the project directory.
     # Then it is recommended that you create a virtual environment if you haven't already.
     # Activate the virtual environment and run
@@ -145,7 +191,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Initiate the 4 models in a dictionary
-    models_dict = {'Fishers Linear Discriminant': FisherLinearDiscriminant(),
+    models_dict = {'Fishers Linear Discriminant': FishersLinearDiscriminant(),
                    'Naive Bayes': GaussianNB(),
                    'Random Forest': RandomForestClassifier(),
                    'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)
