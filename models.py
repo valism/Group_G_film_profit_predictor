@@ -1,6 +1,8 @@
 # Import Packages
 import pandas as pd
 import numpy as np
+from fomlads.model.classification import project_data
+from fomlads.plot.exploratory import plot_class_histograms
 
 from fomlads.model.classification import fisher_linear_discriminant_projection
 from helper_functions import *
@@ -50,6 +52,15 @@ class FisherLinearDiscriminant:
 
         return fpr, tpr
 
+    @staticmethod
+    def plot_histogram(inputs, targets):
+        """
+        Plots the projected histogram using Fishers model
+        """
+        w = fisher_linear_discriminant_projection(inputs, targets)
+        projected_inputs = project_data(inputs, w)
+        ax = plot_class_histograms(projected_inputs, targets)
+        return ax
 
 class LogisticRegression:
     """

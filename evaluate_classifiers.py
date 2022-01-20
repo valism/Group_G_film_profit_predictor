@@ -8,6 +8,7 @@ from pprint import pprint
 import matplotlib.axes as axp
 from models import *
 from helper_functions import *
+from pprint import pprint
 
 # Initiate the 4 models in a dictionary
 models_dict = {'Fishers Linear Discriminant': FisherLinearDiscriminant(),
@@ -15,7 +16,6 @@ models_dict = {'Fishers Linear Discriminant': FisherLinearDiscriminant(),
                'Random Forest': RandomForestClassifier(),
                'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)
                }
-
 
 # Initialize the dataframe df
 df = pd.read_csv("profit_x_y.csv")
@@ -87,7 +87,7 @@ def test_models(data, classifiers):
         cross_validation_scores[name] = model_scores
 
     print("--------------- CROSS VALIDATION SCORES (F1 Scores): ---------------")
-    print(cross_validation_scores)
+    pprint(cross_validation_scores)
     print()  # Prints empty line
     print(" Mean cross validation scores:")
     for classifier in cross_validation_scores.keys():
@@ -107,7 +107,6 @@ def test_models(data, classifiers):
             auc = round(abs(np.trapz(tpr, fpr)), 4)
             roc_dict[name] = {"fpr": fpr, "tpr": tpr, "auc": auc}
         else:
-            model.fit(x_train.to_numpy(), y_train.to_numpy())
             model.fit(x_train, y_train)
             y_score = model.predict_proba(x_test)
             try:
@@ -126,6 +125,11 @@ def test_models(data, classifiers):
     plt.title("ROC curve for Four Models")
     plt.xlabel("False positive rate")
     plt.ylabel("True positive rate")
+
+    # Uncomment the following section if you want to see the histogram plot for Fishers Linear Discriminant.
+    # ax = FisherLinearDiscriminant.plot_histogram(x_train.to_numpy(), y_train.to_numpy())
+    # ax.set_title(" Fishers Linear Discriminant Projected Data")
+    # ax.set_xlabel(r"$\mathbf{w}^T\mathbf{x}$")
 
     plt.legend()
     plt.show()
