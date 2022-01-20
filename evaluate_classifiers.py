@@ -1,25 +1,15 @@
 import pandas as pd
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from pprint import pprint
-import matplotlib.axes as axp
+# import matplotlib.axes as axp
 from models import *
 from helper_functions import *
 from pprint import pprint
-
-# Initiate the 4 models in a dictionary
-models_dict = {'Fishers Linear Discriminant': FisherLinearDiscriminant(),
-               'Naive Bayes': GaussianNB(),
-               'Random Forest': RandomForestClassifier(),
-               'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)
-               }
-
-# Initialize the dataframe df
-df = pd.read_csv("profit_x_y.csv")
-df = df.drop(["Unnamed: 0", "title_x", "title_y"], axis=1)
+import argparse
 
 
 def cross_validate_model(x_data, y_data, model, num_folds):
@@ -88,12 +78,12 @@ def test_models(data, classifiers):
 
     print("--------------- CROSS VALIDATION SCORES (F1 Scores): ---------------")
     pprint(cross_validation_scores)
-    print()  # Prints empty line
-    print(" Mean cross validation scores:")
+
+    print("\n Mean cross validation scores:")
     for classifier in cross_validation_scores.keys():
         mean_score = sum(cross_validation_scores[classifier]) / len(cross_validation_scores[classifier])
         print(f"\t {classifier} --> {round(mean_score, 4)}")
-
+    print("-" * 70)
     # Getting roc curves:
     roc_dict = {}
 
@@ -117,22 +107,51 @@ def test_models(data, classifiers):
             auc = round(abs(np.trapz(tpr, fpr)), 4)
             roc_dict[name] = {"fpr": fpr, "tpr": tpr, "auc": auc}
 
+    print("\n Area below ROC curve:")
     # Plot ROC curves for the model
-    for m in roc_dict.keys():
-        plt.plot(roc_dict[m]['fpr'], roc_dict[m]['tpr'],
-                 label=f"{m} ( Area = {round(roc_dict[m]['auc'], 3)} )")
+    for model_name in roc_dict.keys():
+        plt.plot(roc_dict[model_name]['fpr'], roc_dict[model_name]['tpr'],
+                 label=f"{model_name} ( Area = {round(roc_dict[model_name]['auc'], 3)} )")
 
-    plt.title("ROC curve for Four Models")
+        print(f"\t {model_name} --> {round(roc_dict[model_name]['auc'], 3)}")
+
+    plt.title("ROC curve for classifiers")
     plt.xlabel("False positive rate")
     plt.ylabel("True positive rate")
 
     # Uncomment the following section if you want to see the histogram plot for Fishers Linear Discriminant.
+    # The histogram was only generated for the report.
     # ax = FisherLinearDiscriminant.plot_histogram(x_train.to_numpy(), y_train.to_numpy())
     # ax.set_title(" Fishers Linear Discriminant Projected Data")
     # ax.set_xlabel(r"$\mathbf{w}^T\mathbf{x}$")
 
     plt.legend()
+    plt.savefig("ROC Curves for Classifiers.png")
     plt.show()
 
 
-test_models(df, models_dict)
+if __name__ == "__main__":
+    # Run file from the pycharm terminal using the command "python evaluate_classifiers.py profit_x_y.csv"
+    # If you want to use window's command prompt, you need to change the directory (using the "cd" command)
+    # to the project directory.
+    # Then it is recommended that you create a virtual environment if you haven't already.
+    # Activate the virtual environment and run
+    # the file using the command "python evaluate_classifiers.py profit_x_y.csv".
+
+    # Parser code adapted from: https://www.youtube.com/watch?v=XYUXFR5FSxI
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", help="Name of the csv file containing the data: profit_x_y.csv")
+
+    args = parser.parse_args()
+
+    # Initiate the 4 models in a dictionary
+    models_dict = {'Fishers Linear Discriminant': FisherLinearDiscriminant(),
+                   'Naive Bayes': GaussianNB(),
+                   'Random Forest': RandomForestClassifier(),
+                   'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)
+                   }
+
+    # Initialize the dataframe df
+    df = pd.read_csv(args.filename)
+    df = df.drop(["Unnamed: 0", "title_x", "title_y"], axis=1)
+    test_models(df, models_dict)
