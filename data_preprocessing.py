@@ -40,6 +40,13 @@ imdb_df['worlwide_gross_income'] = imdb_df['worlwide_gross_income'].str.extract(
 
 # reading showed that largest markets are US, China and Korean so films with one of these languages are of interest
 def language_enc(imdb_df):
+    """
+    One hot vector representation of the raw representation dataset. US, China, Korean are largest markets so used as languages of priority.
+
+    Args:
+    imdb_df (Dataframe): Contains the unprocess raw representation of categorical language feature in the IMDb film database.
+
+    """
     # has film been released in english, chinese or korean. one-hot encoding
     imdb_numeric_language_df = imdb_df['language'].str.get_dummies(sep=', ')
     imdb_numeric_language_df = imdb_numeric_language_df[['English', 'Chinese', 'Mandarin', 'Cantonese', 'Korean']]
@@ -53,19 +60,23 @@ def language_enc(imdb_df):
 
     return imdb_df
 
-
-# Top 5 Production companies defined as highest grossers.
-# 20th Century Fox also added in as extra due to high number of films
-
-# 1) Universal Pictures
-# 2) Warner Bros
-# 3) Columbia Pictures
-# 4) Walt Disney Pictures
-# 5) Marvel Studios
-# 7) 20th Century Fox
-
 def production_enc(imdb_df):
+   """
+    One hot vector representation of the raw representation dataset. US, China, Korean are largest markets so used as languages of priority.
+    Top 5 Production companies defined as highest grossers.
+    20th Century Fox also added in as extra due to high number of films
 
+    1) Universal Pictures
+    2) Warner Bros
+    3) Columbia Pictures
+    4) Walt Disney Pictures
+    5) Marvel Studios
+    7) 20th Century Fox
+    
+    Args:
+    imdb_df (Dataframe): Contains the raw representation of categorical production company feature in the IMDb film database.
+
+    """
     # standardise spellings of named production companies of interest
     imdb_df.loc[
         imdb_df['production_company'].str.contains('marvel', case=False), 'production_company'] = 'Marvel Studios'
@@ -92,7 +103,13 @@ def production_enc(imdb_df):
 
 
 def date_enc(imdb_df):
+    """
+    Cateogirisng of discrete month of release data, followed by one hot vector representation of the raw representation dataset. 
 
+    Args:
+    imdb_df (Dataframe): Contains the raw representation of the discrete date_published feature in the IMDb film database.
+
+    """
     # split out published date column and group by season
     date = imdb_df['date_published'].str.split('-', expand=True)
     spring = ["01", "02", "03", "04"]
@@ -120,9 +137,16 @@ def date_enc(imdb_df):
 
     return imdb_df
 
-
 # genre grouping and one-hot encoding
 def genre_enc(imdb_df):
+
+    """
+    Grouping of the uncommon genres into 'Other' genre, followed by one hot vector representation of the raw representation dataset.
+
+    Args:
+    imdb_df (Dataframe): Contains the raw representation of categorical genre feature in the IMDb film database.
+
+    """
 
     # create new genres dataframe and split out by comma seperation
     genres_df = imdb_df['genre'].str.split(',', expand=True)
@@ -163,7 +187,14 @@ def genre_enc(imdb_df):
 # the 15 genre categories are included in dataset, and that only films with at least one genre in common are compared
 
 def film_overlapping_genre_selection(imdb_df):
+    """
+    Applies an overlapping framework to compare films that share at least one genre in common. 36 films from each of the 15 genres are selected to produce 9450 unique pairwise classifications.
+    Feature profit_xy is calculated as binary feature with a positive response showing film_x has made a larger profit than film_y
 
+    Args:
+    imdb_df (Dataframe): Contains a processesed dataframe with one-hot encoded genre features.
+
+    """
     # get a list of GENRE_ column names to be used to iterate through for selection process. Must remove first n=18
     # columns as not GENRE related
     n = 18
