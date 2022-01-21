@@ -62,44 +62,29 @@ def language_enc(imdb_df):
 
 def production_enc(imdb_df):
    """
-    One hot vector representation of the raw representation dataset. US, China, Korean are largest markets so used as languages of priority.
-    Top 5 Production companies defined as highest grossers.
-    20th Century Fox also added in as extra due to high number of films
-
-    1) Universal Pictures
-    2) Warner Bros
-    3) Columbia Pictures
-    4) Walt Disney Pictures
-    5) Marvel Studios
-    7) 20th Century Fox
-    
-    Args:
-    imdb_df (Dataframe): Contains the raw representation of categorical production company feature in the IMDb film database.
-
-    """
-    # standardise spellings of named production companies of interest
-    imdb_df.loc[
-        imdb_df['production_company'].str.contains('marvel', case=False), 'production_company'] = 'Marvel Studios'
-    imdb_df.loc[imdb_df['production_company'].str.contains('universal',
-                                                           case=False), 'production_company'] = 'Universal Pictures'
-    imdb_df.loc[imdb_df['production_company'].str.contains('warner', case=False), 'production_company'] = 'Warner Bros'
-    imdb_df.loc[imdb_df['production_company'].str.contains('Twentieth',
-                                                           case=False), 'production_company'] = 'Twentieth Century Fox'
-    imdb_df.loc[
-        imdb_df['production_company'].str.contains('20th', case=False), 'production_company'] = 'Twentieth Century Fox'
-    imdb_df.loc[
-        imdb_df['production_company'].str.contains('disney', case=False), 'production_company'] = 'Walt Disney Pictures'
-
-    imdb_numeric_pc_df = imdb_df['production_company'].str.get_dummies(sep=', ')
-    imdb_numeric_pc_df = imdb_numeric_pc_df[
-        ['Marvel Studios', 'Columbia Pictures', 'Universal Pictures', 'Warner Bros', 'Twentieth Century Fox',
-         'Walt Disney Pictures']]
-    imdb_numeric_pc_df = imdb_numeric_pc_df.add_prefix('PC_')
-
-    imdb_df = imdb_df.merge(imdb_numeric_pc_df, left_index=True, right_index=True)
-    imdb_df.drop(columns=['production_company'], inplace=True)
-
-    return imdb_df
+   One hot vector representation of the raw representation dataset. US, China, Korean are largest markets so used as languages of priority.
+   Top 5 Production companies defined as highest grossers.
+   20th Century Fox also added in as extra due to high number of films 1) Universal Pictures 2) Warner Bros 3) Columbia Pictures 4) Walt Disney Pictures 5) Marvel Studios 7) 20th Century Fox
+   
+   Args:
+   imdb_df (Dataframe): Contains the raw representation of categorical production company feature in the IMDb film database.
+   
+   """
+   imdb_df.loc[imdb_df['production_company'].str.contains('marvel', case=False), 'production_company'] = 'Marvel Studios'
+   imdb_df.loc[imdb_df['production_company'].str.contains('universal', case=False), 'production_company'] = 'Universal Pictures'
+   imdb_df.loc[imdb_df['production_company'].str.contains('warner', case=False), 'production_company'] = 'Warner Bros'
+   imdb_df.loc[imdb_df['production_company'].str.contains('Twentieth',case=False), 'production_company'] = 'Twentieth Century Fox'
+   imdb_df.loc[imdb_df['production_company'].str.contains('20th', case=False), 'production_company'] = 'Twentieth Century Fox'
+   imdb_df.loc[imdb_df['production_company'].str.contains('disney', case=False), 'production_company'] = 'Walt Disney Pictures'
+   
+   imdb_numeric_pc_df = imdb_df['production_company'].str.get_dummies(sep=', ')
+   imdb_numeric_pc_df = imdb_numeric_pc_df[['Marvel Studios', 'Columbia Pictures', 'Universal Pictures', 'Warner Bros', 'Twentieth Century Fox','Walt Disney Pictures']]
+   imdb_numeric_pc_df = imdb_numeric_pc_df.add_prefix('PC_')
+   
+   imdb_df = imdb_df.merge(imdb_numeric_pc_df, left_index=True, right_index=True)
+   imdb_df.drop(columns=['production_company'], inplace=True)
+   
+   return imdb_df
 
 
 def date_enc(imdb_df):
@@ -258,13 +243,15 @@ imdb_df = genre_enc(imdb_df)
 genres_films = film_overlapping_genre_selection(imdb_df)
 genres_films.drop(columns=['worlwide_gross_income_x', 'worlwide_gross_income_y', 'profit_x', 'profit_y'], inplace=True)
 
-# histogram plot of film_x duration
-plt.hist(genres_films['duration_x'], density=True)
-plt.savefig("duration_x.jpg")
+# plot histogram of continuous data: duration, budget
+fig, axs = plt.subplots(2, 1, figsize=(12,6), tight_layout=True)
 
-# histogram plot of film_x budget
-plt.hist(genres_films['budget_x'], density=True)
-plt.savefig("budget_x.jpg")
+axs[0].hist(genres_films['duration_x'], density=True)
+axs[1].hist(genres_films['budget_x'], density=True)
+axs[0].set(xlabel="Film duration (mins)", ylabel="Density", title="Film duration")
+axs[1].set(xlabel="Budget ($USD)", ylabel="Density", title="Budget")
+plt.rc('font', size=11)
+plt.savefig("summary.jpg")
 
 genres_films.to_csv('profit_x_y.csv')
 
