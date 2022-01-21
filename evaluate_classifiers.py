@@ -1,3 +1,5 @@
+import textwrap
+
 import pandas as pd
 from sklearn.metrics import roc_curve
 import numpy as np
@@ -107,7 +109,7 @@ def print_cross_validation_results(cross_validation_scores):
 
     """
 
-    print("--------------- CROSS VALIDATION SCORES (F1 Scores): ---------------")
+    print("\n --------------- CROSS VALIDATION SCORES (F1 Scores): ---------------")
     pprint(cross_validation_scores)
 
     print("\n Mean cross validation scores:")
@@ -188,14 +190,48 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", help="Name of the csv file containing the data: profit_x_y.csv")
 
+    # Code adapted from:
+    # https://stackoverflow.com/questions/15753701/how-can-i-pass-a-list-as-a-command-line-argument-with-argparse
+    parser.add_argument('--model_names',
+                        help="Initials of the names of the models you want to use, "
+                             "separated by a single space between them."
+                             " \"fld\" -> Fishers Linear Discriminant,"
+                             "\"nb\" -> Naive Bayes,"
+                             "\"rf\" -> Random Forest,"
+                             " and \"lr\"-> Logistic Regression."
+                             " For example, \"nb rf\" means Naive Bayes and Random Forest ",
+                        choices=["fld", "nb", "rf", "lr"],
+                        nargs="+",
+
+                        type=str)
+
     args = parser.parse_args()
 
     # Initiate the 4 models in a dictionary
-    models_dict = {'Fishers Linear Discriminant': FishersLinearDiscriminant(),
-                   'Naive Bayes': GaussianNB(),
-                   'Random Forest': RandomForestClassifier(),
-                   'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)
-                   }
+    default_models_dict = {'Fishers Linear Discriminant': FishersLinearDiscriminant(),
+                           'Naive Bayes': GaussianNB(),
+                           'Random Forest': RandomForestClassifier(),
+                           'Logistic Regression': LogisticRegression(lr=0.1, iter=1000)
+                           }
+
+    models_dict = {}
+    if args.model_names is None:
+        models_dict = default_models_dict
+    else:
+        models_list = [item.lower() for item in args.model_names]
+        for name in models_list:
+            if name == "fld":
+                models_dict["Fishers Linear Discriminant"] = FishersLinearDiscriminant()
+            elif name == "nb":
+                models_dict["Naive Bayes"] = GaussianNB()
+            elif name == "rf":
+                models_dict["Random Forest"] = RandomForestClassifier()
+            elif name == "lr":
+                models_dict["Logistic Regression"] = LogisticRegression(lr=0.1, iter=1000)
+
+    print("\n Models selected:")
+    for name in models_dict.keys():
+        print("\t" + name)
 
     # Initialize the dataframe df
     df = pd.read_csv(args.filename)
