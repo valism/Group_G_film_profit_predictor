@@ -75,7 +75,9 @@ def get_train_test_split(df, train_size=0.7):
 
     """
 
-    # Code for sampling adapted from: https://stackoverflow.com/questions/24147278/how-do-i-create-test-and-train-samples-from-one-dataframe-with-pandas
+    # Code for sampling adapted from user PagMax on stackoverflow.com, last accessed on 21/1/22.
+    # Available at:
+    #   https://stackoverflow.com/questions/24147278/how-do-i-create-test-and-train-samples-from-one-dataframe-with-pandas
 
     train = df.sample(frac=train_size, random_state=100)  # Use random_state to fix a seed value
     test = df.drop(train.index)
@@ -123,7 +125,8 @@ def log_standardisation(df):
     return df
 
 
-# Code adapted from: https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
+# Code for splitting list adapted from user tixxit on stackoverflow.com, last accessed on 21/1/22
+# Available at: https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
 def split(input_list, n):
     """
     Splits an array (or list) into n approximately equal parts.

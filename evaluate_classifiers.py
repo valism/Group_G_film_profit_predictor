@@ -179,19 +179,32 @@ def test_models(data, classifiers):
 
 
 if __name__ == "__main__":
-    # Run file from the pycharm terminal using the command "python evaluate_classifiers.py profit_x_y.csv"
-    # If you want to use Windows' command prompt, you need to change the directory (using the "cd" command)
-    # to the project directory.
-    # Then it is recommended that you create a virtual environment if you haven't already.
-    # Activate the virtual environment and run
-    # the file using the command "python evaluate_classifiers.py profit_x_y.csv".
+    """
+    Run file from the pycharm terminal using the command "python evaluate_classifiers.py profit_x_y.csv"
+    If you want to use Windows' command prompt, you need to change the directory (using the "cd" command)
+    to the project directory.
+    Then it is recommended that you create a virtual environment if you haven't already.
+    Activate the virtual environment and run
+    the file using the command "python evaluate_classifiers.py profit_x_y.csv".
+    An optional argument called "model_names" exists if you only want to compare selected models
+    For example, use "python evaluate_classifiers.py profit_x_y.csv --model_names rf nb"
+    to compare Random Forest and Naive Bayes only.
+    Note that only the initials are used for model_names.
+        fld: Fishers Linear Discriminant
+        nb: Naive Bayes
+        rf: Random Forest
+        lr: Logistic Regression
+    Separate the names by just a single space
+    """
 
-    # Parser code adapted from: https://www.youtube.com/watch?v=XYUXFR5FSxI
+    # Parser code adapted from Dhaval Patel's YouTube's channel "codebasics", last accessed on 21/1/22.
+    # Available at : https://www.youtube.com/watch?v=XYUXFR5FSxI
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", help="Name of the csv file containing the data: profit_x_y.csv")
 
-    # Code adapted from:
-    # https://stackoverflow.com/questions/15753701/how-can-i-pass-a-list-as-a-command-line-argument-with-argparse
+    # Code adapted from users Seth M Morton and Martin Thoma on stackoverflow.com, last accessed on 21/1/22:
+    # Available at:
+    #   https://stackoverflow.com/questions/15753701/how-can-i-pass-a-list-as-a-command-line-argument-with-argparse
     parser.add_argument('--model_names',
                         help="Initials of the names of the models you want to use, "
                              "separated by a single space between them."
