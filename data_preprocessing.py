@@ -251,7 +251,7 @@ axs[1].hist(genres_films['budget_x'], density=True)
 axs[0].set(xlabel="Film duration (mins)", ylabel="Density", title="Film duration")
 axs[1].set(xlabel="Budget ($USD)", ylabel="Density", title="Budget")
 plt.rc('font', size=11)
-plt.savefig("summary.jpg")
+plt.savefig("budget_duration_histograms.jpg")
 
 genres_films.to_csv('profit_x_y.csv')
 
