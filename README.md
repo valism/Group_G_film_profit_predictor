@@ -2,7 +2,7 @@
 
 The purpose of this topic is to evaluate the use of 
 classification models to predict if movie x will
-gain larger profit than movie y. Four models will be compared:
+make larger profit than movie y. Four models will be compared:
 
 * Logistic Regression
 * Fishers Linear Discriminant
@@ -33,7 +33,7 @@ environment that has the installed dependencies (a virtual or system environment
 The format is as follows `python evaluate_classifiers.py <DATA FILE> <COMMAND LINE OPTIONS>.`
 This will load the data from `<DATA FILE>` and run the code with
 the options selected in `<COMMAND LINE OPTIONS>`.
-* Unless you have changed the name, `<DATA FILE>` is .csv file called `profit_x_y.csv`
+* Unless you have changed the name, `<DATA FILE>` is a .csv file called `profit_x_y.csv`
 * In `<COMMAND LINE OPTIONS>` you can select which of the four model you would like to use.
 This is done using the `model_names` argument which takes in the initials of the model names,
 separated by single spaces. The format is as follows
@@ -57,7 +57,7 @@ all the models will be used.
   * Print the area below ROC curve (AUC) for each model.
   * Plot the ROC curve for each model and save it to a file named `ROC Curves for Classifiers.png`
 
-
+* The code should only take a few seconds to run.
 * The random seed in this project is set to '100' to ensure 
 * the results are identical between runs.
 
