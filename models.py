@@ -118,7 +118,18 @@ class FishersLinearDiscriminant:
 
 class LogisticRegression:
     """
-    This class builds Logistic Regression Model.
+    This class builds a Logistic Regression Model with customized learning rate and number of iterations.
+    Attributes:
+        weights (numpy array): The weights of the model.
+        lr (numeric value): The learning rate of the model.
+        iter(integer): The number of train epochs.
+    Methods:
+        sigmoid: Sigmoid function
+        fit: Fit the logistic regression model with X and y.
+        predict_proba: Predict the probability of each data.
+        predict: Predict the classes with customized threshold.
+        get_roc_curve: Creates an ROC curve by calculating the false positive rates and true positive rates
+                       by varying the threshold.
     """
 
     def __init__(self, lr=0.01, iter=10000):
